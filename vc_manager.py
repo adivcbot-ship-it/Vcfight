@@ -11,7 +11,7 @@ from typing import Dict, Optional, Set, Tuple
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 from pytgcalls.types import AudioQuality, MediaStream
-from pytgcalls.exceptions import AlreadyJoinedError, NoActiveGroupCall, NotInGroupCallError
+from pytgcalls.exceptions import PyTgCallsError, NoActiveGroupCall, NotInGroupCallError
 from loguru import logger
 
 from audio_bridge import AudioBridge
@@ -69,10 +69,12 @@ class VCManager:
                 self._db.set_record_group(chat_id)
                 logger.success(f"[VCManager] Joined source VC: {chat_id}")
                 return True, f"✅ Joined source VC `{chat_id}`"
-            except AlreadyJoinedError:
-                self._source_id = chat_id
-                self._source_ok = True
-                return True, f"Already in source VC `{chat_id}`"
+            except PyTgCallsError as e:
+                if "already joined" in str(e).lower():
+                    self._source_id = chat_id
+                    self._source_ok = True
+                    return True, f"Already in source VC `{chat_id}`"
+                return False, f"❌ PyTgCalls error: {e}"
             except NoActiveGroupCall:
                 return False, f"❌ No active voice chat in `{chat_id}`"
             except Exception as exc:
@@ -122,10 +124,12 @@ class VCManager:
                 self._fwd_tasks[chat_id] = task
                 logger.success(f"[VCManager] Joined target VC: {chat_id}")
                 return True, f"✅ Joined target VC `{chat_id}`"
-            except AlreadyJoinedError:
-                self._targets.add(chat_id)
-                self._bridge.add_target(chat_id)
-                return True, f"Already in `{chat_id}` — relay active"
+            except PyTgCallsError as e:
+                if "already joined" in str(e).lower():
+                    self._targets.add(chat_id)
+                    self._bridge.add_target(chat_id)
+                    return True, f"Already in `{chat_id}` — relay active"
+                return False, f"❌ PyTgCalls error: {e}"
             except NoActiveGroupCall:
                 return False, f"❌ No active voice chat in `{chat_id}`"
             except Exception as exc:
