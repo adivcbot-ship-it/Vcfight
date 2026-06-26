@@ -1,6 +1,6 @@
 pyrogram
 tgCrypto
-py-tgcalls
+py-tgcalls          # ← यहाँ बदलाव
 pymongo[srv]>=4.6.0
 python-dotenv>=1.0.0
 loguru>=0.7.2
