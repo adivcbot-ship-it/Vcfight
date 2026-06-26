@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  vcbridge:
+    build: .
+    container_name: vcbridge_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+      - ./vcbridge_bot.session:/app/vcbridge_bot.session
+      - ./vcbridge_user.session:/app/vcbridge_user.session
+    environment:
+      - PYTHONUNBUFFERED=1
+    devices:
+      - /dev/snd:/dev/snd
