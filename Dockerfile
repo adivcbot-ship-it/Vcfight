@@ -5,7 +5,7 @@
 FROM python:3.11-slim
 
 LABEL maintainer="VCBridge Bot"
-LABEL description="Telegram Voice Chat Bridge Bot with PyTgCalls"
+LABEL description="Telegram Voice Chat Bridge Bot with Py-TgCalls"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
